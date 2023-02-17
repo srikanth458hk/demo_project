@@ -32,9 +32,19 @@ spec:
               name: hackathon-starter-port
               protocol: TCP
           env:
-            - name: MongoDB
-              value: hackathon-starter-svc
-  
+            - name: MONGODB_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: mongodb-endpoints
+                  key: mongodb-uri
+          volumeMounts:
+            - name: mongodb-auth
+              mountPath: /etc/secrets
+              readOnly: true
+      volumes:
+        - name: mongodb-auth
+          secret:
+            secretName: mongodb-auth
 
 ---
 apiVersion: v1
