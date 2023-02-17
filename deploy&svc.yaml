@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hackathon-starter
+  labels:
+    app: hackathon-starter
+    purpose: deploy
+spec:
+  minReadySeconds: 5
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hackathon-starter
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%
+  template:
+    metadata:
+      name: hackathon-starter-pod
+      labels:
+        app: hackathon-starter
+        version: dev1.0
+    spec:
+      containers:
+        - image: hackathon-starter-ver0.1
+          name: hackathon-starter-container
+          ports:
+            - containerPort: 8080
+              name: hackathon-starter-port
+              protocol: TCP
+          env:
+            - name: MongoDB
+              value: hackathon-starter-svc
+  
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hackathon-starter-svc
+  labels:
+    app: hackathon-starter
+    purpose: service
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: hackathon-starter
+  type: LoadBalancer
