@@ -8,6 +8,17 @@ pipeline {
                 
             }
         }
+        stage('Build') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
         stage ('docker image build') {
             steps {
                 sh 'docker image build -t reponame/images:hackathon-starter-ver0.1 .'
