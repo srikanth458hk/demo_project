@@ -1,0 +1,42 @@
+---
+- hosts: myserver
+  become: true
+  vars:
+    mongodb_version: "4.4"
+  tasks:
+    - name: Add MongoDB repo
+      yum_repository:
+        name: mongodb-org-{{ mongodb_version }}
+        description: MongoDB Repository
+        baseurl: https://repo.mongodb.org/yum/redhat/{{ ansible_distribution_major_version }}/mongodb-org/{{ mongodb_version }}/x86_64/
+        gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc
+        enabled: yes
+      when: ansible_distribution == "CentOS"
+    
+    - name: Add MongoDB repo
+      apt_repository:
+        repo: deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/{{ mongodb_version }} multiverse
+        state: present
+        filename: mongodb-org-{{ mongodb_version }}
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+    
+    - name: Install MongoDB
+      package:
+        name: mongodb-org
+        state: latest
+        update_cache: yes
+      when: ansible_distribution == "CentOS"
+    
+    - name: Install MongoDB
+      package:
+        name: mongodb-org
+        state: latest
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+    
+    - name: Start MongoDB service
+      systemd:
+        name: mongod
+        state: started
+        enabled: yes
